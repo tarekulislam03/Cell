@@ -1,53 +1,110 @@
-# CHRONO
+<div align="center">
 
-CHRONO is a retro 16-bit pixel-art terminal emulator and Unix shell built with C, Rust (Tauri v2), and xterm.js.
+<h1>CHRONO Terminal</h1>
 
-## System Architecture
+<h3>Retro 16-Bit Pixel-Art Desktop Terminal Emulator & Unix Shell</h3>
 
-- Core Shell Engine: Written in C (`cell.c`, `ui.c`). Handles command execution, PTY streaming, process control, and readline integration.
-- Desktop Shell Host: Built with Rust (Tauri v2) and xterm.js frontend. Provides frameless window management, custom title bar drag handles, and PTY I/O communication over IPC.
+English | [Documentation](./README.md)
 
-## Key Features
+<!-- badges -->
 
-- Startup Directory: Launches directly in user home directory (`~`).
-- Dynamic Prompt: Path format displays as `{user} ~` and subpaths relative to root home directory.
-- Theme Switcher: Built-in `theme` command supporting live switching across 5 retro pixel-art themes (`sunset`, `cyberpunk`, `forest`, `synthwave`, `matrix`).
-- Text Contrast Layer: Left-side 60% black gradient overlay ensuring high legibility over pixel backgrounds.
-- Smart Clipboard Handling: `Ctrl+C` copies selected text if highlighted; sends SIGINT interrupt if no selection exists. `Ctrl+V` pastes clipboard contents without duplication.
-- Window Management: Frameless rounded window (`12px` border-radius) with custom minimize, maximize, and close controls.
+[![C](https://img.shields.io/badge/c-GCC%20%7C%20Clang-00599C?logo=c&logoColor=white)](https://gcc.gnu.org/)
+[![Rust](https://img.shields.io/badge/rust-v1.75+-000000?logo=rust&logoColor=white)](https://www.rust-lang.org/)
+[![Tauri](https://img.shields.io/badge/tauri-v2.0-FFC131?logo=tauri&logoColor=black)](https://tauri.app/)
+[![xterm.js](https://img.shields.io/badge/xterm.js-v5.5.0-00F0FF?logo=javascript&logoColor=black)](https://xtermjs.org/)
+[![OS](https://img.shields.io/badge/os-linux%2C%20win%2C%20mac-pink.svg)](#quick-start-guide)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
-## Prerequisites
+</div>
 
-- GCC / Clang
-- libreadline-dev
-- Rust & Cargo
-- Node.js & npm
+<br />
 
-## Building & Execution
+**CHRONO is a high-performance desktop terminal emulator and custom C Unix shell with dynamic color themes, smart clipboard handling, and frameless window controls.**
 
-### 1. Build Core Shell Binary
+---
+
+## Quick Start Guide
+
+### Step 1: Prerequisites
+* **C Compiler:** `gcc` or `clang`
+* **C Libraries:** `libreadline-dev`
+* **Rust Toolchain:** `rustc` & `cargo` (`>= 1.75`)
+* **Node.js:** `v18` or higher
+
+### Step 2: Installation & Compilation
+
 ```bash
+# Clone repository
+git clone https://github.com/tarekulislam03/Cell.git
+cd Cell
+
+# Build core C shell binary
 make clean && make
-```
 
-### 2. Run Desktop Terminal Application
-```bash
+# Install terminal frontend dependencies
 cd cell-terminal
 npm install
+```
+
+### Step 3: Launch Application
+
+```bash
+# Run in development mode
 npm run tauri dev
 ```
 
-### 3. Production Application Bundle
+### Step 4: Build Release Installer
+
 ```bash
-cd cell-terminal
+# Compile standalone application package
 npm run tauri build
 ```
 
-## Built-In Commands
+---
 
-- `theme <name>`: Switch visual theme (`sunset`, `cyberpunk`, `forest`, `synthwave`, `matrix`).
-- `sysinfo`: Display system specifications and hardware details.
-- `matrix`: Run retro digital code rain animation.
-- `scan <target>`: Run network security port scanner simulation.
-- `cd <path>`: Change working directory.
-- `help`: Print available commands.
+## Project Structure
+
+```
+Cell/
+├── cell.c                # C shell main loop, prompt renderer & command parser
+├── ui.c                  # System info, matrix animation & terminal helper functions
+├── ui.h                  # Header declarations & ANSI color macros
+├── Makefile              # C compilation rules
+│
+├── cell-terminal/
+│   ├── src/
+│   │   ├── index.html    # Main window DOM structure
+│   │   ├── main.js       # xterm.js setup, PTY IPC listener & theme manager
+│   │   ├── styles.css    # Layout rules, window styling & gradient overlays
+│   │   └── pixel_bg.png  # Default pixel-art background image
+│   │
+│   └── src-tauri/
+│       ├── src/lib.rs    # Tauri command handlers, PTY management & IPC events
+│       ├── Cargo.toml    # Rust dependencies (tauri, portable-pty)
+│       └── tauri.conf.json # Window layout & security configuration
+│
+└── README.md             # Project documentation
+```
+
+---
+
+## Built-In Commands Reference
+
+* `theme <name>`: Switch active visual theme (`sunset`, `cyberpunk`, `forest`, `synthwave`, `matrix`).
+* `sysinfo`: Display system hardware specifications, memory usage, and kernel information.
+* `matrix`: Trigger retro digital code rain animation.
+* `scan <target>`: Run simulated network port scan.
+* `cd <dir>`: Navigate to target directory.
+* `help`: Display list of shell commands.
+
+---
+
+## License
+
+Distributed under the **MIT License**. See `LICENSE` for details.
+
+---
+
+<div align="center">
+  <sub>Built for high-speed terminal productivity and retro 16-bit aesthetics.</sub>
+</div>
