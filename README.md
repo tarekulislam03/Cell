@@ -1,54 +1,53 @@
-<div align="center">
+# CHRONO
 
-<h1>CELL</h1>
+CHRONO is a retro 16-bit pixel-art terminal emulator and Unix shell built with C, Rust (Tauri v2), and xterm.js.
 
-<h3> Unix Shell Using C </h3>
+## System Architecture
 
+- Core Shell Engine: Written in C (`cell.c`, `ui.c`). Handles command execution, PTY streaming, process control, and readline integration.
+- Desktop Shell Host: Built with Rust (Tauri v2) and xterm.js frontend. Provides frameless window management, custom title bar drag handles, and PTY I/O communication over IPC.
 
-<!-- badges -->
+## Key Features
 
-[![C Language](https://img.shields.io/badge/language-C99%20%2F%20C11-00599C?logo=c&logoColor=white)](https://en.cppreference.com/w/c)
-[![GNU Readline](https://img.shields.io/badge/readline-GNU-339933?logo=gnu&logoColor=white)](https://gnu.org/software/readline/)
-[![OS: Linux](https://img.shields.io/badge/os-linux%20x86__64-FCC624?logo=linux&logoColor=black)](#quick-start-guide)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](#license)
+- Startup Directory: Launches directly in user home directory (`~`).
+- Dynamic Prompt: Path format displays as `{user} ~` and subpaths relative to root home directory.
+- Theme Switcher: Built-in `theme` command supporting live switching across 5 retro pixel-art themes (`sunset`, `cyberpunk`, `forest`, `synthwave`, `matrix`).
+- Text Contrast Layer: Left-side 60% black gradient overlay ensuring high legibility over pixel backgrounds.
+- Smart Clipboard Handling: `Ctrl+C` copies selected text if highlighted; sends SIGINT interrupt if no selection exists. `Ctrl+V` pastes clipboard contents without duplication.
+- Window Management: Frameless rounded window (`12px` border-radius) with custom minimize, maximize, and close controls.
 
-</div>
+## Prerequisites
 
-<br />
+- GCC / Clang
+- libreadline-dev
+- Rust & Cargo
+- Node.js & npm
 
-**CELL is a fast, lightweight Unix shell written in C featuring theme customization, quote-aware command tokenization, GNU Readline integration, and full-screen terminal animations.**
+## Building & Execution
 
----
-
-## Quick Start Guide
-
-### Step 1: Prerequisites
-
-Install `gcc`, `make`, and `libreadline-dev` on Linux (or Windows via WSL):
-
+### 1. Build Core Shell Binary
 ```bash
-# Ubuntu / Debian / WSL (Windows Subsystem for Linux)
-sudo apt update
-sudo apt install build-essential libreadline-dev
-
-# Arch Linux
-sudo pacman -S base-devel readline
-
-# Fedora
-sudo dnf groupinstall "Development Tools"
-sudo dnf install readline-devel
+make clean && make
 ```
 
-### Step 2: Build & Run
-
+### 2. Run Desktop Terminal Application
 ```bash
-# Clone repository
-git clone https://github.com/tarekulislam03/Cell.git
-cd Cell
-
-# Compile executable
-make
-
-# Launch CELL Shell
-./cell
+cd cell-terminal
+npm install
+npm run tauri dev
 ```
+
+### 3. Production Application Bundle
+```bash
+cd cell-terminal
+npm run tauri build
+```
+
+## Built-In Commands
+
+- `theme <name>`: Switch visual theme (`sunset`, `cyberpunk`, `forest`, `synthwave`, `matrix`).
+- `sysinfo`: Display system specifications and hardware details.
+- `matrix`: Run retro digital code rain animation.
+- `scan <target>`: Run network security port scanner simulation.
+- `cd <path>`: Change working directory.
+- `help`: Print available commands.
