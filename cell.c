@@ -7,6 +7,7 @@
 #include <readline/history.h>
 #include "ui.h"
 
+// tokenize input
 static void tokenize_input(char *line, char **args, int max_args) {
     int i = 0;
     char *p = line;
@@ -34,6 +35,7 @@ static void tokenize_input(char *line, char **args, int max_args) {
     args[i] = NULL;
 }
 
+
 int main(int argc, char **argv) {
     (void)argc;
     (void)argv;
@@ -48,7 +50,7 @@ int main(int argc, char **argv) {
 
     int init_len = strlen(initial_cwd);
 
-    // Render boot banner
+    // render boot banner
     print_boot_banner();
 
     while (1) {
@@ -58,7 +60,7 @@ int main(int argc, char **argv) {
 
         Theme t = get_current_theme();
 
-        // Format CWD for prompt
+        // format cwd for prompt
         if (getcwd(cwd, sizeof(cwd)) != NULL) {
             if (strncmp(cwd, initial_cwd, init_len) == 0) {
                 char *suffix = cwd + init_len;
@@ -78,12 +80,12 @@ int main(int argc, char **argv) {
                      "\001%s\002 ~ \001%s\002", t.primary, t.text);
         }
 
-        // Read command line
+        // read command
         char *raw_line = readline(prompt);
 
         if (raw_line == NULL) {
             printf("\n%s[SESSION TERMINATED]%s\n", t.highlight, t.reset);
-            break; // Handle Ctrl+D (EOF)
+            break; // handles ctrl+d
         }
 
         if (strlen(raw_line) > 0) {
@@ -94,7 +96,7 @@ int main(int argc, char **argv) {
         line[sizeof(line) - 1] = '\0';
         free(raw_line);
 
-        // Tokenize input string with quote support ("..." and '...')
+        // for tokenizing strings with quotes " " or ' ' 
         char *my_args[32];
         tokenize_input(line, my_args, 32);
 
@@ -102,7 +104,7 @@ int main(int argc, char **argv) {
 
         // Built-in Shell & Hacker Commands
         if (strcmp(my_args[0], "exit") == 0 || strcmp(my_args[0], "quit") == 0) {
-            printf("%s[+] Exiting CELL console. Goodbye, agent.%s\n", t.highlight, t.reset);
+            printf("%sFarewell, fools.%s\n", t.highlight, t.reset);
             break;
         }
 
@@ -154,28 +156,29 @@ int main(int argc, char **argv) {
             if (my_args[1] == NULL) {
                 char *home = getenv("HOME");
                 if (home) {
-                    if (chdir(home) != 0) perror("cd failed");
+                    if (chdir(home) != 0)
+                        perror("What a disappointment you are");
                 } else {
-                    fprintf(stderr, "cd: missing argument\n");
+                    fprintf(stderr, "You're so pathetic.\n");
                 }
             } else if (chdir(my_args[1]) != 0) {
-                perror("cd failed");
+                perror("You're so pathetic.");
             }
             continue;
         }
 
-        // Fork & exec external Linux process
+        // fork & exec
         pid_t pid = fork();
         int status;
 
         if (pid == 0) {
             execvp(my_args[0], my_args);
-            printf("%s[!] Command not found or exec failed: %s%s\n", t.highlight, my_args[0], t.reset);
+            printf("%s What a disappointment you are. You're so pathetic. %s%s\n", t.highlight, my_args[0], t.reset);
             exit(EXIT_FAILURE);
         } else if (pid > 0) {
             wait(&status);
         } else {
-            perror("fork failed");
+            perror("You're so pathetic.");
         }
     }
 
