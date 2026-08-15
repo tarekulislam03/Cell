@@ -1,0 +1,22 @@
+# Raw Understanding of Building a Unix Shell
+
+Shell is a computer program that helps users to directly interact with the operating system.
+
+In short, you have to write such a program that can interact with your OS and execute tasks.
+
+At first, you have to know how an operating system operates. An OS basically consists of two main parts:
+
+1. User-space programs (normal apps, shell)
+2. Kernel — it is the part of the OS that has direct hardware access.
+
+Inside an OS, users use user-space programs to send a system call to the kernel to execute a task. Shell is one user-space program only.
+
+So, in order to do a certain task, like opening a file, changing a directory, or editing a document, we have to send some commands or syscalls (system calls) to the kernel. Either we do it through a graphical user interface (GUI) or a command-line program like a shell. Basically, what we do in a file manager to open a file and what we do to open a file using a shell eventually sends the same system calls to the kernel, just in a different manner.
+
+At a very basic level, if we talk about how a shell executes a certain task, it either uses the OS's built-in system calls or calls a separate program from your disk to execute a certain task. If someone is doing a task and he can do it using his own abilities, it is the same as the OS's built-in commands. But if that task requires a separate person to use his ability to do the task, it means either you are replaced by that person and only he does the task, or you give him the same new task to do without giving up your own task. We are now talking about running separate programs that are on your disk or OS to do the task for you. The separate program is the same as a program like your shell's program. So, suppose to open a file you need to either write the full program to open a file inside your shell's program, or you just use an already-written program to open the file. So, for ease, we do not basically write thousands of programs to do tasks inside our own program; we just use a separate program's compiled binary to do the task. But here is a catch. To run a program, the kernel has to give that program an address inside the memory. One address can run or store only one program. So, to run a separate program while also keeping our own program intact, we use a system call `fork()`. As I said, a memory address can store only one program's compiled binary. So, if we run an external program from our own program without `fork()`, what happens is that the kernel allocates the external program in the same memory address that is also storing our own program's compiled binary. One address cannot store two programs. So, our program just gets removed by the kernel and stores the external program in that same memory address. So, basically, our own program terminates because it doesn't physically exist in memory. It just runs the external program and exits without running our program again.
+
+To solve this, we basically create a very identical child process that has the same memory address as our parent process, where our program is running. But the child process is basically a copy of the main process that has its own memory. So, what `fork()` does is create an identical child process and execute the external program there, do the task, and exit. And after exiting, the child process gets deleted, and our parent process remains intact.
+
+But there is also a catch: if the parent and child have separate memory and one cannot touch another program, then technically, even though the child process is running a separate program, our parent process is also running our own program. So, after exiting the child, the child returns only that "yeah, I have done my job, I'm exiting." So, what happens is that there is a competition between the already-running program's output and command. And if it happens, the child creates a zombie process inside memory. The child is not there physically, but the exit status remains because the parent never waits for the child to finish. It grows over time and can cause a shortage of PID tables and eventually stop the shell. So, we use the `wait()` system call to let our parent process know that it should wait for the child process to finish and then run again.
+
+There is one more command, `exec()`. It just executes the program. It doesn't know whether it's a parent or child. We usually use it inside the child process to execute a program without interfering with our parent process.
