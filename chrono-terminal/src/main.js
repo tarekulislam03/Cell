@@ -16,6 +16,13 @@ const THEMES = {
     borderMuted: '#4a280f',
     amberText: '#d97724',
     greenText: '#52b788',
+    iconBg: 'linear-gradient(135deg, rgba(217, 119, 36, 0.4), rgba(196, 115, 53, 0.2))',
+    btnClose: '#e74c3c',
+    btnCloseBorder: '#b02818',
+    btnMin: '#e67e22',
+    btnMinBorder: '#b0550e',
+    btnMax: '#f1c40f',
+    btnMaxBorder: '#b89508',
     termTheme: {
       background: 'transparent',
       foreground: '#ffffff',
@@ -31,6 +38,13 @@ const THEMES = {
     borderMuted: '#5c0032',
     amberText: '#00f0ff',
     greenText: '#ff2a85',
+    iconBg: 'linear-gradient(135deg, rgba(255, 42, 133, 0.4), rgba(112, 0, 255, 0.25))',
+    btnClose: '#ff0055',
+    btnCloseBorder: '#b8003d',
+    btnMin: '#7000ff',
+    btnMinBorder: '#4f00b8',
+    btnMax: '#00f0ff',
+    btnMaxBorder: '#00a5b0',
     termTheme: {
       background: 'transparent',
       foreground: '#ffffff',
@@ -46,6 +60,13 @@ const THEMES = {
     borderMuted: '#1b4332',
     amberText: '#00ff9d',
     greenText: '#e0c354',
+    iconBg: 'linear-gradient(135deg, rgba(45, 106, 79, 0.5), rgba(0, 255, 157, 0.2))',
+    btnClose: '#e63946',
+    btnCloseBorder: '#ab1d28',
+    btnMin: '#e0c354',
+    btnMinBorder: '#a68f35',
+    btnMax: '#2a9d8f',
+    btnMaxBorder: '#1a685e',
     termTheme: {
       background: 'transparent',
       foreground: '#ffffff',
@@ -61,6 +82,13 @@ const THEMES = {
     borderMuted: '#4a0026',
     amberText: '#ff7700',
     greenText: '#00ffff',
+    iconBg: 'linear-gradient(135deg, rgba(255, 0, 127, 0.4), rgba(255, 119, 0, 0.25))',
+    btnClose: '#ff007f',
+    btnCloseBorder: '#b8005b',
+    btnMin: '#ff7700',
+    btnMinBorder: '#b85500',
+    btnMax: '#00ffff',
+    btnMaxBorder: '#00b8b8',
     termTheme: {
       background: 'transparent',
       foreground: '#ffffff',
@@ -76,6 +104,13 @@ const THEMES = {
     borderMuted: '#0d2b1d',
     amberText: '#00ff41',
     greenText: '#50fa7b',
+    iconBg: 'linear-gradient(135deg, rgba(0, 255, 65, 0.35), rgba(13, 43, 29, 0.4))',
+    btnClose: '#ff2a4b',
+    btnCloseBorder: '#b8152e',
+    btnMin: '#00ff41',
+    btnMinBorder: '#00b82e',
+    btnMax: '#50fa7b',
+    btnMaxBorder: '#32b857',
     termTheme: {
       background: 'transparent',
       foreground: '#ffffff',
@@ -105,6 +140,14 @@ function applyTheme(themeName) {
   document.documentElement.style.setProperty('--text-amber', theme.amberText);
   document.documentElement.style.setProperty('--text-green', theme.greenText);
 
+  if (theme.iconBg) document.documentElement.style.setProperty('--icon-bg', theme.iconBg);
+  if (theme.btnClose) document.documentElement.style.setProperty('--btn-close', theme.btnClose);
+  if (theme.btnCloseBorder) document.documentElement.style.setProperty('--btn-close-border', theme.btnCloseBorder);
+  if (theme.btnMin) document.documentElement.style.setProperty('--btn-min', theme.btnMin);
+  if (theme.btnMinBorder) document.documentElement.style.setProperty('--btn-min-border', theme.btnMinBorder);
+  if (theme.btnMax) document.documentElement.style.setProperty('--btn-max', theme.btnMax);
+  if (theme.btnMaxBorder) document.documentElement.style.setProperty('--btn-max-border', theme.btnMaxBorder);
+
   if (window.term) {
     window.term.options.theme = {
       ...DEFAULT_THEME.termTheme,
@@ -114,25 +157,28 @@ function applyTheme(themeName) {
 }
 
 function initWindowControls() {
-  document.getElementById('btn-min')?.addEventListener('click', () => {
+  document.getElementById('btn-min')?.addEventListener('click', (e) => {
+    e.stopPropagation();
     invoke('minimize_window');
   });
-  document.getElementById('btn-max')?.addEventListener('click', () => {
+  document.getElementById('btn-max')?.addEventListener('click', (e) => {
+    e.stopPropagation();
     invoke('toggle_maximize_window');
   });
-  document.getElementById('btn-close')?.addEventListener('click', () => {
+  document.getElementById('btn-close')?.addEventListener('click', (e) => {
+    e.stopPropagation();
     invoke('close_window');
   });
 
   const titlebar = document.getElementById('titlebar');
   if (titlebar) {
     titlebar.addEventListener('mousedown', (e) => {
-      if (e.button === 0 && !e.target.closest('#titlebar-right')) {
+      if (e.button === 0 && !e.target.closest('#titlebar-controls')) {
         invoke('start_drag_window');
       }
     });
     titlebar.addEventListener('dblclick', (e) => {
-      if (!e.target.closest('#titlebar-right')) {
+      if (!e.target.closest('#titlebar-controls')) {
         invoke('toggle_maximize_window');
       }
     });

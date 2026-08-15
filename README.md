@@ -35,8 +35,8 @@ English | [Documentation](./README.md)
 
 ```bash
 # Clone repository
-git clone https://github.com/tarekulislam03/Cell.git
-cd Cell
+git clone https://github.com/tarekulislam03/Chrono.git
+cd Chrono
 
 # Build core C shell binary
 make clean && make
@@ -65,7 +65,7 @@ npm run tauri build
 ## Project Structure
 
 ```
-Cell/
+Chrono/
 ├── chrono.c              # C shell main loop, prompt renderer & command parser
 ├── ui.c                  # System info, matrix animation & terminal helper functions
 ├── ui.h                  # Header declarations & ANSI color macros

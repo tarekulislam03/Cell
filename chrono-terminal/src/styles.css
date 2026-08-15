@@ -11,6 +11,14 @@
   --text-green: #52b788;
   --text-dim: #8c5b36;
   --font-family: 'VT323', 'JetBrains Mono', monospace;
+
+  /* Theme-Matched Unique Header Control Colors (Default Sunset) */
+  --btn-close: #e74c3c;
+  --btn-close-border: #b02818;
+  --btn-min: #e67e22;
+  --btn-min-border: #b0550e;
+  --btn-max: #f1c40f;
+  --btn-max-border: #b89508;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,69 +33,141 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Outer Retro Window Container with Rounded Corners */
+/* Outer Window Container with Subtle 3D Inset Depth */
 #retro-window {
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
-  border: 2px solid var(--border-color);
-  border-radius: 12px;
+  border: none;
+  border-radius: 10px;
   overflow: hidden;
   background: var(--bg-dark);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  box-shadow: 
+    inset 0 1px 1px rgba(255, 255, 255, 0.08),
+    inset 0 0 6px rgba(0, 0, 0, 0.5),
+    0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
-/* Title Bar */
+/* Title Bar - Theme-Colored Dots on Right */
 #titlebar {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 32px;
-  padding: 0 10px;
-  background: #140d08;
+  height: 36px;
+  padding: 0 14px;
+  background: rgba(16, 11, 7, 0.95);
   border-bottom: 1px solid var(--border-muted);
   z-index: 10;
   -webkit-app-region: drag;
   user-select: none;
 }
+
 #titlebar-left {
+  display: flex;
+  align-items: center;
+  -webkit-app-region: drag;
+}
+
+/* Minimal App Icon Badge with $_ Logo (Non-black vibrant container) */
+.app-icon-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: var(--icon-bg, linear-gradient(135deg, rgba(217, 119, 36, 0.35), rgba(196, 115, 53, 0.2)));
+  border: 1px solid var(--border-color);
+  color: var(--text-amber);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 1px 3px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+#titlebar-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
   gap: 8px;
   color: var(--text-amber);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 15px;
-  letter-spacing: 1px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  letter-spacing: 1.5px;
   font-weight: 700;
+  text-transform: uppercase;
+  pointer-events: none;
   -webkit-app-region: drag;
 }
-.title-icon { fill: var(--text-amber); }
-#titlebar-right {
+
+#titlebar-controls {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   -webkit-app-region: no-drag;
+  z-index: 2;
 }
-.win-btn {
-  width: 22px;
-  height: 22px;
-  background: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-amber);
-  font-family: var(--font-family);
-  font-size: 12px;
+
+.mac-btn {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  border-radius: 50%;
-  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  padding: 0;
+  outline: none;
+  background-color: transparent;
+  transition: transform 0.12s ease, filter 0.12s ease, background-color 0.15s ease;
   -webkit-app-region: no-drag;
 }
-.win-btn:hover {
-  background: var(--border-color);
-  color: #0e0906;
+
+.mac-close {
+  background-color: var(--btn-close);
+  border-color: var(--btn-close-border);
+  color: rgba(60, 0, 0, 0.85);
+}
+
+.mac-min {
+  background-color: var(--btn-min);
+  border-color: var(--btn-min-border);
+  color: rgba(80, 45, 0, 0.85);
+}
+
+.mac-max {
+  background-color: var(--btn-max);
+  border-color: var(--btn-max-border);
+  color: rgba(0, 50, 0, 0.85);
+}
+
+.mac-btn svg {
+  width: 8px;
+  height: 8px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+#titlebar-controls:hover .mac-btn svg {
+  opacity: 1;
+}
+
+.mac-btn:hover {
+  filter: brightness(1.15);
+  transform: scale(1.08);
+}
+
+.mac-btn:active {
+  transform: scale(0.95);
+  filter: brightness(0.9);
 }
 
 /* Tab Bar */
