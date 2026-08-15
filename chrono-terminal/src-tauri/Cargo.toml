@@ -1,12 +1,12 @@
 [package]
-name = "cell-terminal"
+name = "chrono-terminal"
 version = "0.1.0"
-description = "CELL Terminal Emulator — Anime-themed native terminal"
+description = "CHRONO Terminal Emulator — Retro 16-Bit Desktop Terminal"
 authors = ["tarekul"]
 edition = "2021"
 
 [lib]
-name = "cell_terminal_lib"
+name = "chrono_terminal_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

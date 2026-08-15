@@ -50,32 +50,32 @@ fn start_drag_window(window: Window) {
     let _ = window.start_dragging();
 }
 
-// Helper to locate the compiled C 'cell' shell binary
-fn find_cell_executable() -> PathBuf {
+// Helper to locate the compiled C 'chrono' shell binary
+fn find_chrono_executable() -> PathBuf {
     if let Ok(manifest_dir) = std::env::var("CARGO_MANIFEST_DIR") {
-        let path = PathBuf::from(manifest_dir).join("../cell");
+        let path = PathBuf::from(manifest_dir).join("../chrono");
         if path.exists() {
             return path.canonicalize().unwrap_or(path);
         }
     }
 
     if let Ok(cwd) = std::env::current_dir() {
-        let path = cwd.join("../cell");
+        let path = cwd.join("../chrono");
         if path.exists() {
             return path.canonicalize().unwrap_or(path);
         }
-        let direct_path = cwd.join("cell");
+        let direct_path = cwd.join("chrono");
         if direct_path.exists() {
             return direct_path.canonicalize().unwrap_or(direct_path);
         }
     }
 
-    let default_path = PathBuf::from("/home/tarekul/Documents/job & intership/projects/Unix Shell/cell");
+    let default_path = PathBuf::from("/home/tarekul/Documents/job & intership/projects/Unix Shell/chrono");
     if default_path.exists() {
         return default_path;
     }
 
-    PathBuf::from("cell")
+    PathBuf::from("chrono")
 }
 
 // Tauri Command: Spawn the C shell inside a native PTY
@@ -92,13 +92,13 @@ fn spawn_shell(app: AppHandle, state: State<'_, PtyState>) -> Result<(), String>
         })
         .map_err(|e| format!("Failed to open PTY: {}", e))?;
 
-    let cell_bin = find_cell_executable();
-    println!("[CELL Terminal] Spawning shell executable: {:?}", cell_bin);
+    let chrono_bin = find_chrono_executable();
+    println!("[CHRONO Terminal] Spawning shell executable: {:?}", chrono_bin);
 
-    let mut cmd = CommandBuilder::new(&cell_bin);
+    let mut cmd = CommandBuilder::new(&chrono_bin);
     if let Ok(home) = std::env::var("HOME") {
         cmd.cwd(home);
-    } else if let Some(parent) = cell_bin.parent() {
+    } else if let Some(parent) = chrono_bin.parent() {
         cmd.cwd(parent);
     }
 
@@ -108,7 +108,7 @@ fn spawn_shell(app: AppHandle, state: State<'_, PtyState>) -> Result<(), String>
     let _child = pair
         .slave
         .spawn_command(cmd)
-        .map_err(|e| format!("Failed to spawn shell '{:?}': {}", cell_bin, e))?;
+        .map_err(|e| format!("Failed to spawn shell '{:?}': {}", chrono_bin, e))?;
 
     let mut reader = pair
         .master

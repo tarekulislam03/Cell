@@ -42,7 +42,7 @@ cd Cell
 make clean && make
 
 # Install terminal frontend dependencies
-cd cell-terminal
+cd chrono-terminal
 npm install
 ```
 
@@ -66,12 +66,12 @@ npm run tauri build
 
 ```
 Cell/
-├── cell.c                # C shell main loop, prompt renderer & command parser
+├── chrono.c              # C shell main loop, prompt renderer & command parser
 ├── ui.c                  # System info, matrix animation & terminal helper functions
 ├── ui.h                  # Header declarations & ANSI color macros
 ├── Makefile              # C compilation rules
 │
-├── cell-terminal/
+├── chrono-terminal/
 │   ├── src/
 │   │   ├── index.html    # Main window DOM structure
 │   │   ├── main.js       # xterm.js setup, PTY IPC listener & theme manager
