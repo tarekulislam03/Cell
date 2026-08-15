@@ -7,42 +7,6 @@
 #include <time.h>
 #include "ui.h"
 
-static Theme themes[] = {
-    // name,       primary (prompt),    secondary,           highlight,           text,                reset
-    {"matrix",    "\033[1;32m",       "\033[0;32m",        "\033[1;37m",        "\033[1;33m",        "\033[0m"}, // Green Prompt, Yellow Text
-    {"cyberpunk", "\033[1;36m",       "\033[1;35m",        "\033[1;33m",        "\033[1;35m",        "\033[0m"}, // Cyan Prompt, Magenta Text
-    {"amber",     "\033[1;33m",       "\033[0;33m",        "\033[1;37m",        "\033[0;33m",        "\033[0m"}, // Gold Prompt, Amber Text
-    {"synthwave", "\033[1;35m",       "\033[1;34m",        "\033[1;36m",        "\033[1;36m",        "\033[0m"}, // Purple Prompt, Cyan Text
-    {"blood",     "\033[1;31m",       "\033[0;31m",        "\033[1;33m",        "\033[1;33m",        "\033[0m"}, // Red Prompt, Gold Text
-    {"monokai",   "\033[1;32m",       "\033[1;34m",        "\033[1;33m",        "\033[1;37m",        "\033[0m"}  // Green Prompt, White Text
-};
-
-static int current_theme_idx = 0;
-static const int num_themes = sizeof(themes) / sizeof(themes[0]);
-
-Theme get_current_theme(void) {
-    return themes[current_theme_idx];
-}
-
-int set_theme(const char *name) {
-    if (!name) return 0;
-    for (int i = 0; i < num_themes; i++) {
-        if (strcmp(name, themes[i].name) == 0) {
-            current_theme_idx = i;
-            return 1;
-        }
-    }
-    return 0;
-}
-
-void print_available_themes(void) {
-    Theme t = get_current_theme();
-    printf("\n");
-    printf("  %savailable themes%s : matrix, cyberpunk, amber, synthwave, blood, monokai\n", t.primary, t.reset);
-    printf("  %scurrent theme%s   : %s\n", t.primary, t.reset, t.name);
-    printf("  %show to change%s   : theme <name>\n\n", t.primary, t.reset);
-}
-
 int get_terminal_width(void) {
     struct winsize w;
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == 0) {
@@ -55,10 +19,6 @@ void clear_screen(void) {
     printf("\033[2J\033[H\033[3J");
     fflush(stdout);
 }
-
-
-
-
 
 void run_matrix_animation(int seconds) {
     clear_screen();
@@ -80,7 +40,6 @@ void run_matrix_animation(int seconds) {
 
     const char *charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%&*<>[]{}/*-+~CELL";
     int charset_len = strlen(charset);
-    Theme t = get_current_theme();
 
     time_t start_time = time(NULL);
     while (time(NULL) - start_time < seconds) {
@@ -88,11 +47,11 @@ void run_matrix_animation(int seconds) {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (drops[x] == y) {
-                    printf("%s%c", t.highlight, charset[rand() % charset_len]);
+                    printf("%s%c", COLOR_HIGHLIGHT, charset[rand() % charset_len]);
                 } else if ((drops[x] - 1 + height) % height == y) {
-                    printf("%s%c", t.primary, charset[rand() % charset_len]);
+                    printf("%s%c", COLOR_PRIMARY, charset[rand() % charset_len]);
                 } else if ((drops[x] - 2 + height) % height == y) {
-                    printf("%s%c", t.secondary, charset[rand() % charset_len]);
+                    printf("%s%c", COLOR_SECONDARY, charset[rand() % charset_len]);
                 } else {
                     printf(" ");
                 }
@@ -105,7 +64,7 @@ void run_matrix_animation(int seconds) {
                 drops[i] = (drops[i] + 1) % height;
             }
         }
-        usleep(50000); // 50ms frame rate
+        usleep(50000);
     }
 
     free(drops);
@@ -115,7 +74,6 @@ void run_matrix_animation(int seconds) {
 }
 
 void run_hacker_scanner(const char *target) {
-    Theme t = get_current_theme();
     const char *tgt = (target && strlen(target) > 0) ? target : "127.0.0.1 (LOCAL NODE)";
 
     clear_screen();
@@ -125,24 +83,21 @@ void run_hacker_scanner(const char *target) {
     const char *services[] = {"FTP", "SSH", "HTTP", "HTTPS", "DEV-NODE", "MYSQL", "POSTGRES", "HTTP-ALT"};
     int num_ports = sizeof(ports) / sizeof(ports[0]);
 
-    // Stage 1: Full-screen port scanning & cipher stream animation
     for (int p = 0; p < num_ports; p++) {
         for (int frame = 0; frame <= 20; frame++) {
-            printf("\033[H"); // Cursor to top-left
+            printf("\033[H");
 
-            // Header HUD
             printf("%s┌── SYSTEM INFILTRATION SCANNER // TARGET: %s%s%s ──┐%s\n",
-                   t.primary, t.highlight, tgt, t.primary, t.reset);
+                   COLOR_PRIMARY, COLOR_HIGHLIGHT, tgt, COLOR_PRIMARY, COLOR_RESET);
             printf("%s│%s MODE: FULL EXPLOIT MATRIX | THREADS: 32 | PROTOCOL: TCP/IP %s│%s\n",
-                   t.primary, t.text, t.primary, t.reset);
+                   COLOR_PRIMARY, COLOR_TEXT, COLOR_PRIMARY, COLOR_RESET);
             printf("%s├─── PORT VULNERABILITY SCANNER ───────────────────────────────────────────────┤%s\n",
-                   t.primary, t.reset);
+                   COLOR_PRIMARY, COLOR_RESET);
 
-            // Render ports status
             for (int i = 0; i < num_ports; i++) {
                 if (i < p) {
                     printf("%s│ %s%-8s (PORT %4d) : %s[████████████████████] %s[ OPEN / EXPLOITED ] %s│%s\n",
-                           t.primary, t.text, services[i], ports[i], t.primary, t.highlight, t.primary, t.reset);
+                           COLOR_PRIMARY, COLOR_TEXT, services[i], ports[i], COLOR_PRIMARY, COLOR_HIGHLIGHT, COLOR_PRIMARY, COLOR_RESET);
                 } else if (i == p) {
                     char bar[21];
                     for (int b = 0; b < 20; b++) {
@@ -150,66 +105,62 @@ void run_hacker_scanner(const char *target) {
                     }
                     bar[20] = '\0';
                     printf("%s│ %s%-8s (PORT %4d) : %s[%-20s] %s[ BYPASSING... ]   %s│%s\n",
-                           t.primary, t.text, services[i], ports[i], t.highlight, bar, t.secondary, t.primary, t.reset);
+                           COLOR_PRIMARY, COLOR_TEXT, services[i], ports[i], COLOR_HIGHLIGHT, bar, COLOR_SECONDARY, COLOR_PRIMARY, COLOR_RESET);
                 } else {
                     printf("%s│ %s%-8s (PORT %4d) : %s[....................] %s[ WAITING... ]      %s│%s\n",
-                           t.primary, t.text, services[i], ports[i], t.secondary, t.secondary, t.primary, t.reset);
+                           COLOR_PRIMARY, COLOR_TEXT, services[i], ports[i], COLOR_SECONDARY, COLOR_SECONDARY, COLOR_PRIMARY, COLOR_RESET);
                 }
             }
 
             printf("%s├─── REALTIME MEMORY DUMP & CIPHER STREAM ────────────────────────────────────┤%s\n",
-                   t.primary, t.reset);
+                   COLOR_PRIMARY, COLOR_RESET);
 
-            // Animate memory hex dumps
             for (int r = 0; r < 4; r++) {
                 printf("%s│ %s0x%08X : %02X %02X %02X %02X %02X %02X %02X %02X  | %c%c%c%c%c%c%c%c %s│%s\n",
-                       t.primary, t.text,
+                       COLOR_PRIMARY, COLOR_TEXT,
                        (unsigned int)(0x7FFF0000 + (rand() % 0xFFFF)),
                        rand() % 256, rand() % 256, rand() % 256, rand() % 256,
                        rand() % 256, rand() % 256, rand() % 256, rand() % 256,
                        'A' + (rand() % 26), 'a' + (rand() % 26), '0' + (rand() % 10),
                        '#' + (rand() % 5), 'A' + (rand() % 26), '!', '*', 'X',
-                       t.primary, t.reset);
+                       COLOR_PRIMARY, COLOR_RESET);
             }
 
-            // Overall Progress
             int percent = (p * 100 + frame * 5) / num_ports;
             if (percent > 100) percent = 100;
-            printf("%s└── INTRUSION PROGRESS: [%s", t.primary, t.highlight);
+            printf("%s└── INTRUSION PROGRESS: [%s", COLOR_PRIMARY, COLOR_HIGHLIGHT);
             int fill = (percent * 30) / 100;
             for (int k = 0; k < 30; k++) {
                 printf("%s", k < fill ? "=" : " ");
             }
-            printf("%s] %3d%% ──┘%s\n", t.primary, percent, t.reset);
+            printf("%s] %3d%% ──┘%s\n", COLOR_PRIMARY, percent, COLOR_RESET);
             fflush(stdout);
 
-            usleep(25000); // 25ms frame update
+            usleep(25000);
         }
     }
 
-    // Stage 2: Final Movie-Style Screen Takeover Banner
     clear_screen();
     printf("\n\n");
-    printf("%s  ╔══════════════════════════════════════════════════════════════╗%s\n", t.highlight, t.reset);
-    printf("%s  ║  %s[ SYSTEM INTRUSION COMPLETE // ACCESS GRANTED ]%s           ║%s\n", t.highlight, t.primary, t.highlight, t.reset);
-    printf("%s  ║                                                              ║%s\n", t.highlight, t.reset);
-    printf("%s  ║  %sTARGET NODE    : %-40s%s ║%s\n", t.highlight, t.text, tgt, t.highlight, t.reset);
-    printf("%s  ║  %sSECURITY LEVEL : BYPASSED (ROOT LEVEL 0)%s                 ║%s\n", t.highlight, t.text, t.highlight, t.reset);
-    printf("%s  ║  %sEXPLOITED PORTS: 21, 22, 80, 443, 3000, 3306, 5432, 8080%s    ║%s\n", t.highlight, t.text, t.highlight, t.reset);
-    printf("%s  ║  %sCIPHER KEY     : 0x98F3A0294CBA12E78801AAFF9321%s          ║%s\n", t.highlight, t.text, t.highlight, t.reset);
-    printf("%s  ║  %sVULNERABILITY  : SURFACE MAPPED & LOGGED%s                 ║%s\n", t.highlight, t.text, t.highlight, t.reset);
-    printf("%s  ╚══════════════════════════════════════════════════════════════╝%s\n\n", t.highlight, t.reset);
+    printf("%s  ╔══════════════════════════════════════════════════════════════╗%s\n", COLOR_HIGHLIGHT, COLOR_RESET);
+    printf("%s  ║  %s[ SYSTEM INTRUSION COMPLETE // ACCESS GRANTED ]%s           ║%s\n", COLOR_HIGHLIGHT, COLOR_PRIMARY, COLOR_HIGHLIGHT, COLOR_RESET);
+    printf("%s  ║                                                              ║%s\n", COLOR_HIGHLIGHT, COLOR_RESET);
+    printf("%s  ║  %sTARGET NODE    : %-40s%s ║%s\n", COLOR_HIGHLIGHT, COLOR_TEXT, tgt, COLOR_HIGHLIGHT, COLOR_RESET);
+    printf("%s  ║  %sSECURITY LEVEL : BYPASSED (ROOT LEVEL 0)%s                 ║%s\n", COLOR_HIGHLIGHT, COLOR_TEXT, COLOR_HIGHLIGHT, COLOR_RESET);
+    printf("%s  ║  %sEXPLOITED PORTS: 21, 22, 80, 443, 3000, 3306, 5432, 8080%s    ║%s\n", COLOR_HIGHLIGHT, COLOR_TEXT, COLOR_HIGHLIGHT, COLOR_RESET);
+    printf("%s  ║  %sCIPHER KEY     : 0x98F3A0294CBA12E78801AAFF9321%s          ║%s\n", COLOR_HIGHLIGHT, COLOR_TEXT, COLOR_HIGHLIGHT, COLOR_RESET);
+    printf("%s  ║  %sVULNERABILITY  : SURFACE MAPPED & LOGGED%s                 ║%s\n", COLOR_HIGHLIGHT, COLOR_TEXT, COLOR_HIGHLIGHT, COLOR_RESET);
+    printf("%s  ╚══════════════════════════════════════════════════════════════╝%s\n\n", COLOR_HIGHLIGHT, COLOR_RESET);
     fflush(stdout);
 
-    usleep(2000000); // Hold final banner for 2 seconds
+    usleep(2000000);
 
-    printf("\033[?25h"); // Restore cursor
+    printf("\033[?25h");
     clear_screen();
     print_menu_commands();
 }
 
 void print_sysinfo(void) {
-    Theme t = get_current_theme();
     struct sysinfo info;
     sysinfo(&info);
 
@@ -219,50 +170,44 @@ void print_sysinfo(void) {
         hostname[sizeof(hostname) - 1] = '\0';
     }
 
-    printf("\n%s  ____ _____ _     _      %s  Host: %s%s\n", t.primary, t.secondary, hostname, t.reset);
-    printf("%s / ___| ____| |   | |     %s  OS: Linux x86_64\n", t.primary, t.secondary);
-    printf("%s| |   |  _| | |   | |     %s  Kernel: CELL Cyber-Kernel\n", t.primary, t.secondary);
-    printf("%s| |___| |___| |___| |___  %s  Uptime: %ld mins\n", t.primary, t.secondary, info.uptime / 60);
-    printf("%s \\____|_____|_____|_____| %s  Shell PID: %d\n", t.primary, t.secondary, getpid());
-    printf("%s                          %s  Total RAM: %ld MB\n", t.primary, t.secondary, info.totalram / (1024 * 1024));
-    printf("%s                          %s  Free RAM:  %ld MB\n\n", t.primary, t.secondary, info.freeram / (1024 * 1024));
+    printf("\n%s  ____ _____ _     _      %s  Host: %s%s\n", COLOR_PRIMARY, COLOR_SECONDARY, hostname, COLOR_RESET);
+    printf("%s / ___| ____| |   | |     %s  OS: Linux x86_64\n", COLOR_PRIMARY, COLOR_SECONDARY);
+    printf("%s| |   |  _| | |   | |     %s  Kernel: CELL Cyber-Kernel\n", COLOR_PRIMARY, COLOR_SECONDARY);
+    printf("%s| |___| |___| |___| |___  %s  Uptime: %ld mins\n", COLOR_PRIMARY, COLOR_SECONDARY, info.uptime / 60);
+    printf("%s \\____|_____|_____|_____| %s  Shell PID: %d\n", COLOR_PRIMARY, COLOR_SECONDARY, getpid());
+    printf("%s                          %s  Total RAM: %ld MB\n", COLOR_PRIMARY, COLOR_SECONDARY, info.totalram / (1024 * 1024));
+    printf("%s                          %s  Free RAM:  %ld MB\n\n", COLOR_PRIMARY, COLOR_SECONDARY, info.freeram / (1024 * 1024));
+    fflush(stdout);
 }
 
 void print_menu_commands(void) {
-    Theme t = get_current_theme();
     printf("\n");
-    printf("%s  help - all commands%s\n", t.primary, t.reset);
-    printf("%s  theme - change themes%s\n", t.primary, t.reset);
-    printf("%s  matrix - weird shit!%s\n", t.primary, t.reset);
-    // printf("%s  scan - hacker shit!%s\n", t.primary, t.reset);
-    printf("%s  exit - exit cell%s\n", t.primary, t.reset);
+    printf("%s  dev & system commands:%s\n", COLOR_PRIMARY, COLOR_RESET);
+    printf("    %scd <dir>%s           change directory\n", COLOR_SECONDARY, COLOR_RESET);
+    printf("    %spwd%s                print current directory path\n", COLOR_SECONDARY, COLOR_RESET);
+    printf("    %sls / find%s          list / search files in directory\n", COLOR_SECONDARY, COLOR_RESET);
+    printf("    %scat / grep%s         view file content / search text pattern\n", COLOR_SECONDARY, COLOR_RESET);
+    printf("    %smkdir / rm / cp / mv%s file & directory operations\n", COLOR_SECONDARY, COLOR_RESET);
+    printf("    %sgit <cmd>%s          version control operations\n", COLOR_SECONDARY, COLOR_RESET);
+    printf("    %ssysinfo%s            display system hardware & kernel specs\n", COLOR_SECONDARY, COLOR_RESET);
     printf("\n");
+    printf("%s  customization commands:%s\n", COLOR_PRIMARY, COLOR_RESET);
+    printf("    %sset opacity <val>%s    bg opacity (0.0 to 0.4)\n", COLOR_SECONDARY, COLOR_RESET);
+    printf("    %sset blur <px>%s        bg blur in pixels (0 to 40)\n", COLOR_SECONDARY, COLOR_RESET);
+    printf("    %sset font <px>%s        font size (10 to 28)\n", COLOR_SECONDARY, COLOR_RESET);
+    printf("    %sset cursor <style>%s   cursor style (bar, block, underline)\n", COLOR_SECONDARY, COLOR_RESET);
+    printf("\n");
+    printf("%s  utilities:%s\n", COLOR_PRIMARY, COLOR_RESET);
+    printf("    %smatrix / scan%s       visual rain & security port scan simulation\n", COLOR_SECONDARY, COLOR_RESET);
+    printf("    %sclear / exit%s        clear terminal / exit shell\n\n", COLOR_SECONDARY, COLOR_RESET);
+    fflush(stdout);
 }
 
 void print_boot_banner(void) {
     clear_screen();
-    Theme t = get_current_theme();
-    printf("\n\n");
-    printf("%s", t.primary);
-    printf("   ██████╗███████╗██╗     ██╗     \n");
-    printf("  ██╔════╝██╔════╝██║     ██║     \n");
-    printf("  ██║     █████╗  ██║     ██║     \n");
-    printf("  ██║     ██╔══╝  ██║     ██║     \n");
-    printf("  ╚██████╗███████╗███████╗███████╗\n");
-    printf("   ╚═════╝╚══════╝╚══════╝╚══════╝\n");
-    print_menu_commands();
+    fflush(stdout);
 }
 
 void print_help(void) {
-    Theme t = get_current_theme();
-    printf("\n");
-    printf("  %scd%s - change working directory\n", t.primary, t.reset);
-    printf("  %spwd%s - print working directory\n", t.primary, t.reset);
-    printf("  %scat%s - view file content\n", t.primary, t.reset);
-    printf("  %smkdir%s - create directory\n", t.primary, t.reset);
-    printf("  %srm%s - remove file or directory\n", t.primary, t.reset);
-    printf("  %scp%s - copy file or directory\n", t.primary, t.reset);
-    printf("  %smv%s - move or rename file\n", t.primary, t.reset);
-    printf("  %sgrep%s - search pattern in files\n", t.primary, t.reset);
-    printf("  %schmod%s - change file permissions\n\n", t.primary, t.reset);
+    print_menu_commands();
 }

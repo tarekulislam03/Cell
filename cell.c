@@ -7,7 +7,7 @@
 #include <readline/history.h>
 #include "ui.h"
 
-// tokenize input
+// Tokenize input string into arguments
 static void tokenize_input(char *line, char **args, int max_args) {
     int i = 0;
     char *p = line;
@@ -35,22 +35,11 @@ static void tokenize_input(char *line, char **args, int max_args) {
     args[i] = NULL;
 }
 
-
 int main(int argc, char **argv) {
     (void)argc;
     (void)argv;
 
-    char initial_cwd[1024];
-
-    // Save starting directory for prompt formatting
-    if (getcwd(initial_cwd, sizeof(initial_cwd)) == NULL) {
-        perror("Failed to get starting directory");
-        exit(EXIT_FAILURE);
-    }
-
-    int init_len = strlen(initial_cwd);
-
-    // render boot banner
+    // Render boot banner
     print_boot_banner();
 
     while (1) {
@@ -58,34 +47,30 @@ int main(int argc, char **argv) {
         char cwd[1024];
         char prompt[1200];
 
-        Theme t = get_current_theme();
-
-        // format cwd for prompt
+        // Format cwd for prompt
         if (getcwd(cwd, sizeof(cwd)) != NULL) {
-            if (strncmp(cwd, initial_cwd, init_len) == 0) {
-                char *suffix = cwd + init_len;
-                if (strlen(suffix) == 0) {
-                    snprintf(prompt, sizeof(prompt),
-                             "\001%s\002 ~ \001%s\002", t.primary, t.text);
-                } else {
-                    snprintf(prompt, sizeof(prompt),
-                             "\001%s\002 %s ~ \001%s\002", t.primary, suffix, t.text);
-                }
+            char display_path[1024];
+            if (strncmp(cwd, "/home/", 6) == 0) {
+                snprintf(display_path, sizeof(display_path), "%s", cwd + 6);
             } else {
-                snprintf(prompt, sizeof(prompt),
-                         "\001%s\002 %s ~ \001%s\002", t.primary, cwd, t.text);
+                snprintf(display_path, sizeof(display_path), "%s", cwd);
             }
+
+            snprintf(prompt, sizeof(prompt),
+                     "\001\033[1;32m\002%s ~\001\033[0m\002\n\001\033[1;33m\002$ \001\033[0m\002",
+                     display_path);
         } else {
             snprintf(prompt, sizeof(prompt),
-                     "\001%s\002 ~ \001%s\002", t.primary, t.text);
+                     "\001\033[1;32m\002tarekul ~\001\033[0m\002\n\001\033[1;33m\002$ \001\033[0m\002");
         }
 
-        // read command
+        // Read command
+        fflush(stdout);
         char *raw_line = readline(prompt);
 
         if (raw_line == NULL) {
-            printf("\n%s[SESSION TERMINATED]%s\n", t.highlight, t.reset);
-            break; // handles ctrl+d
+            printf("\n%s[SESSION TERMINATED]%s\n", COLOR_HIGHLIGHT, COLOR_RESET);
+            break;
         }
 
         if (strlen(raw_line) > 0) {
@@ -96,15 +81,15 @@ int main(int argc, char **argv) {
         line[sizeof(line) - 1] = '\0';
         free(raw_line);
 
-        // for tokenizing strings with quotes " " or ' ' 
         char *my_args[32];
         tokenize_input(line, my_args, 32);
 
         if (my_args[0] == NULL) continue;
 
-        // Built-in Shell & Hacker Commands
+        // Built-in Commands
         if (strcmp(my_args[0], "exit") == 0 || strcmp(my_args[0], "quit") == 0) {
-            printf("%sFarewell, fools.%s\n", t.highlight, t.reset);
+            printf("%sFarewell.%s\n", COLOR_HIGHLIGHT, COLOR_RESET);
+            fflush(stdout);
             break;
         }
 
@@ -133,22 +118,36 @@ int main(int argc, char **argv) {
             continue;
         }
 
+        if (strcmp(my_args[0], "theme") == 0) {
+            if (my_args[1] != NULL) {
+                printf("\033]777;theme;%s\007", my_args[1]);
+                fflush(stdout);
+                printf("\n  %sTheme switched to '%s'%s\n\n", COLOR_PRIMARY, my_args[1], COLOR_RESET);
+            } else {
+                printf("\n  %sAvailable Themes:%s\n", COLOR_HIGHLIGHT, COLOR_RESET);
+                printf("    - %ssunset%s    (Warm pixel cabin sunset - default)\n", COLOR_PRIMARY, COLOR_RESET);
+                printf("    - %scyberpunk%s (Neon pink & cyan rain street)\n", COLOR_PRIMARY, COLOR_RESET);
+                printf("    - %sforest%s    (Emerald moonlit misty pine forest)\n", COLOR_PRIMARY, COLOR_RESET);
+                printf("    - %ssynthwave%s (Outrun grid & magenta synth sun)\n", COLOR_PRIMARY, COLOR_RESET);
+                printf("    - %smatrix%s    (Hacker green digital code rain)\n", COLOR_PRIMARY, COLOR_RESET);
+                printf("\n  Usage: %stheme <name>%s\n\n", COLOR_HIGHLIGHT, COLOR_RESET);
+            }
+            continue;
+        }
+
         if (strcmp(my_args[0], "scan") == 0 || strcmp(my_args[0], "hack") == 0) {
             run_hacker_scanner(my_args[1]);
             continue;
         }
 
-        if (strcmp(my_args[0], "theme") == 0) {
-            if (my_args[1] == NULL) {
-                print_available_themes();
+        if (strcmp(my_args[0], "set") == 0) {
+            if (my_args[1] != NULL && my_args[2] != NULL) {
+                printf("\033]777;set;%s;%s\007", my_args[1], my_args[2]);
+                printf("  %s%s updated to '%s'%s\n\n", COLOR_PRIMARY, my_args[1], my_args[2], COLOR_RESET);
             } else {
-                if (set_theme(my_args[1])) {
-                    Theme new_t = get_current_theme();
-                    printf("  %stheme switched to '%s'%s\n\n", new_t.primary, new_t.name, new_t.reset);
-                } else {
-                    printf("  %sunknown theme. options: matrix, cyberpunk, amber, synthwave, blood, monokai%s\n\n", t.highlight, t.reset);
-                }
+                printf("  %susage: set <opacity|blur|font|cursor> <value>%s\n\n", COLOR_HIGHLIGHT, COLOR_RESET);
             }
+            fflush(stdout);
             continue;
         }
 
@@ -157,28 +156,28 @@ int main(int argc, char **argv) {
                 char *home = getenv("HOME");
                 if (home) {
                     if (chdir(home) != 0)
-                        perror("What a disappointment you are");
+                        perror("cd failed");
                 } else {
-                    fprintf(stderr, "You're so pathetic.\n");
+                    fprintf(stderr, "HOME variable not set.\n");
                 }
             } else if (chdir(my_args[1]) != 0) {
-                perror("You're so pathetic.");
+                perror("cd failed");
             }
             continue;
         }
 
-        // fork & exec
+        // Fork & execute external commands
         pid_t pid = fork();
         int status;
 
         if (pid == 0) {
             execvp(my_args[0], my_args);
-            printf("%s What a disappointment you are. You're so pathetic. %s%s\n", t.highlight, my_args[0], t.reset);
+            printf("%scommand not found: %s%s\n", COLOR_HIGHLIGHT, my_args[0], COLOR_RESET);
             exit(EXIT_FAILURE);
         } else if (pid > 0) {
             wait(&status);
         } else {
-            perror("You're so pathetic.");
+            perror("fork failed");
         }
     }
 
