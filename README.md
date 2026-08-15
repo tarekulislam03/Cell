@@ -1,10 +1,9 @@
 <div align="center">
 
-<h1>CELL Unix Shell</h1>
+<h1>CELL</h1>
 
-<h3>Minimalist, Theme-Aware Unix Terminal & Hacker Shell Environment in C</h3>
+<h3> Unix Shell Using C </h3>
 
-English | [Documentation](./README.md)
 
 <!-- badges -->
 
@@ -53,24 +52,3 @@ make
 # Launch CELL Shell
 ./cell
 ```
-
----
-
-## Command Reference & Usage
-
-| Command | Usage | Description |
-| :--- | :--- | :--- |
-| `theme` | `theme <name>` | Switch active color palette (`matrix`, `cyberpunk`, `amber`, `synthwave`, `blood`, `monokai`) |
-| `matrix` | `matrix [seconds]` | Run full-screen Matrix digital rain animation |
-| `scan` / `hack` | `scan [target]` | Run movie-style cyber infiltration scanner |
-| `sysinfo` / `neofetch` | `sysinfo` | Display Linux host info, shell PID, uptime, and RAM usage |
-| `help` | `help` | Display quick Linux command reference |
-| `clear` / `cls` | `clear` | Clear terminal screen |
-| `cd` | `cd <path>` | Change working directory (defaults to `$HOME`) |
-| `exit` / `quit` | `exit` | Exit CELL shell session |
-
----
-
-## License
-
-Distributed under the **MIT License**.
