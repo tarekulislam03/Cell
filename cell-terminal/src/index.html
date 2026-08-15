@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TERMINAL</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Retro Outer Window Frame -->
+  <div id="retro-window">
+    <!-- Retro Title Bar -->
+    <div id="titlebar" data-tauri-drag-region>
+      <div id="titlebar-left" data-tauri-drag-region>
+        <svg class="title-icon" viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
+          <path d="M1 2h14v10H1V2zm1 1v8h12V3H2zm2 2h3v1H4V5zm0 2h5v1H4V7zm0 2h3v1H4V9z"/>
+        </svg>
+        <span class="title-text">TARS</span>
+      </div>
+      <div id="titlebar-right">
+        <button class="win-btn" id="btn-min" title="Minimize">_</button>
+        <button class="win-btn" id="btn-max" title="Maximize">☐</button>
+        <button class="win-btn" id="btn-close" title="Close">✕</button>
+      </div>
+    </div>
+
+    <!-- Main Terminal Viewport with Pixel Background -->
+    <div id="viewport">
+      <div id="bg-layer"></div>
+      <div id="bg-overlay"></div>
+      <div id="terminal-container">
+        <div id="terminal"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>

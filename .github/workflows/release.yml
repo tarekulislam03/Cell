@@ -1,0 +1,76 @@
+name: Build & Release Cross-Platform Native App
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build Native (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: cell-terminal-linux-x86_64
+            asset_name: cell-terminal-linux-x86_64
+          - os: macos-latest
+            artifact_name: cell-terminal-macos-universal
+            asset_name: cell-terminal-macos-universal
+          - os: windows-latest
+            artifact_name: cell-terminal-windows-x64.exe
+            asset_name: cell-terminal-windows-x64.exe
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Install Linux Dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libreadline-dev libx11-dev libxrandr-dev libinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev
+
+      - name: Configure CMake
+        run: cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build All Executables
+        run: cmake --build build --config Release
+
+      - name: Prepare Artifact (Linux / macOS)
+        if: runner.os != 'Windows'
+        run: |
+          cp build/terminal_raylib ./${{ matrix.artifact_name }}
+
+      - name: Prepare Artifact (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          copy build\Release\terminal_raylib.exe .\\${{ matrix.artifact_name }}
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_name }}
+
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Publish Release Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            cell-terminal-linux-x86_64/cell-terminal-linux-x86_64
+            cell-terminal-macos-universal/cell-terminal-macos-universal
+            cell-terminal-windows-x64.exe/cell-terminal-windows-x64.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

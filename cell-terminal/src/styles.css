@@ -1,0 +1,210 @@
+/* ============================================================
+   CELL Terminal — Retro Pixel Art Aesthetic (ui-inspo.png)
+   ============================================================ */
+
+:root {
+  --border-color: #c47335;
+  --border-muted: #4a280f;
+  --bg-dark: #0e0906;
+  --bg-tab-active: #1e130b;
+  --text-amber: #d97724;
+  --text-green: #52b788;
+  --text-dim: #8c5b36;
+  --font-family: 'VT323', 'JetBrains Mono', monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: transparent !important;
+  font-family: var(--font-family);
+  color: #e2e8f0;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Outer Retro Window Container with Rounded Corners */
+#retro-window {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-dark);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+/* Title Bar */
+#titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+  padding: 0 10px;
+  background: #140d08;
+  border-bottom: 1px solid var(--border-muted);
+  z-index: 10;
+  -webkit-app-region: drag;
+  user-select: none;
+}
+#titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-amber);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  letter-spacing: 1px;
+  font-weight: 700;
+  -webkit-app-region: drag;
+}
+.title-icon { fill: var(--text-amber); }
+#titlebar-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  -webkit-app-region: no-drag;
+}
+.win-btn {
+  width: 22px;
+  height: 22px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-amber);
+  font-family: var(--font-family);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  -webkit-app-region: no-drag;
+}
+.win-btn:hover {
+  background: var(--border-color);
+  color: #0e0906;
+}
+
+/* Tab Bar */
+#tabbar {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  padding: 2px 8px 0 8px;
+  background: #0a0604;
+  border-bottom: 1px solid var(--border-muted);
+  gap: 6px;
+  z-index: 10;
+}
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background: #140d08;
+  border: 1px solid var(--border-muted);
+  border-bottom: none;
+  color: var(--text-dim);
+  font-size: 14px;
+  border-radius: 3px 3px 0 0;
+  cursor: pointer;
+}
+.tab.active {
+  background: var(--bg-tab-active);
+  border-color: var(--border-color);
+  color: var(--text-green);
+  font-weight: bold;
+}
+.tab-icon { fill: var(--text-green); }
+.tab-close {
+  font-size: 11px;
+  color: var(--text-amber);
+  margin-left: 4px;
+  cursor: pointer;
+}
+.tab-add {
+  color: var(--text-amber);
+  font-size: 16px;
+  padding: 0 6px;
+  cursor: pointer;
+}
+.tab-add:hover { color: #fff; }
+
+/* Viewport Container */
+#viewport {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* Pixel Art Background Layer */
+#bg-layer {
+  position: absolute; inset: 0; z-index: 0;
+  background-image: url('./pixel_bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  opacity: 0.7;
+}
+
+/* Left-Side Black Gradient Overlay for High Text Clarity (60% Max Opacity) */
+#bg-overlay {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.60) 0%, rgba(0, 0, 0, 0.35) 45%, rgba(0, 0, 0, 0) 90%);
+}
+
+/* Terminal Canvas & Transparency Overrides */
+#terminal-container {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  padding: 10px 14px;
+  display: flex;
+}
+#terminal {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.xterm {
+  width: 100% !important;
+  height: 100% !important;
+}
+.xterm-viewport {
+  width: 100% !important;
+  background-color: transparent !important;
+  background: transparent !important;
+  overflow-y: auto !important;
+}
+.xterm-viewport::-webkit-scrollbar {
+  width: 0px !important;
+  display: none !important;
+}
+.xterm-screen,
+.xterm-rows,
+.xterm-helpers {
+  background-color: transparent !important;
+  background: transparent !important;
+  z-index: 11;
+}
+
+.xterm-rows {
+  text-shadow: none !important;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 0px !important; display: none !important; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: transparent; }
