@@ -2,9 +2,9 @@
 
 <h1>CHRONO Terminal</h1>
 
-<h3>Retro 16-Bit Pixel-Art Desktop Terminal Emulator & Unix Shell</h3>
+<h3>Desktop Terminal Emulator & Unix Shell</h3>
 
-English | [Documentation](./README.md)
+English | [Documentation](./UNDERSTANDING.md)
 
 <!-- badges -->
 
